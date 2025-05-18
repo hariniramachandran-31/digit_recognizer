@@ -5,7 +5,7 @@ import torchvision.transforms as transforms
 from PIL import Image
 import os
 
-app = Flask(__name__)
+app = Flask(_name_)
 
 model = DigitClassifier()
 model.load_state_dict(torch.load("digit_model.pth", map_location=torch.device("cpu")))
@@ -30,7 +30,6 @@ def index():
             prediction = torch.argmax(output).item()
     return render_template("index.html", prediction=prediction)
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT",10000))
-    app.run(host="0.0.0.0",port=port)
-    
+if _name_ == "_main_":
+    port = int(os.environ.get("PORT", 5000))  # Render dynamic port
+    app.run(host="0.0.0.0", port=port)        # Make app accessible
