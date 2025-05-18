@@ -1,18 +1,17 @@
-from flask import Flask, render_template, request
-from model import DigitClassifier
+from flask import Flask, request, render_template
+from PIL import Image
 import torch
 import torchvision.transforms as transforms
-from PIL import Image
-import os
 
 app = Flask(__name__)
 
-model = DigitClassifier()
-model.load_state_dict(torch.load("digit_model.pth", map_location=torch.device("cpu")))
+# Load the trained model
+model = torch.load("model.pth", map_location=torch.device("cpu"))
 model.eval()
 
+# Define image preprocessing
 transform = transforms.Compose([
-    transforms.Grayscale(), 
+    transforms.Grayscale(num_output_channels=1),
     transforms.Resize((28, 28)),
     transforms.ToTensor(),
     transforms.Normalize((0.5,), (0.5,))
@@ -24,7 +23,7 @@ def index():
     if request.method == "POST":
         image = request.files["digit"]
         img = Image.open(image)
-        img = transform(img).unsqueeze(0)
+        img = transform(img).unsqueeze(0)  # Add batch dimension
         with torch.no_grad():
             output = model(img)
             prediction = torch.argmax(output).item()
